@@ -2,12 +2,13 @@
 library(GenomicRanges)
 library(tidyverse)
 
-source("/mnt/storageBig8/work/micoli/SCNA_Purple/src/post_processing/sv_annotation_functions.R")
-setwd("/mnt/storageBig8/work/micoli/SCNA_Purple/results/250701")
+source("sv_annotation_functions.R")
 
 # List samples and patients
+# Load a dataframe with sample and patient information
 samples <- read.table("purity_ploidy_estimates.tsv", sep="\t", header=T) |>
   select(sample, patient)  
+# Load copy-number segmentation
 segs <- read.table("segmentation_info_final.tsv", sep="\t", header=T)
 
 # Extract annotation
@@ -27,7 +28,7 @@ sv_annotation <- lst |>
 write.table(sv_annotation, "pre_sv_annotation.tsv", sep="\t", col.names = T, row.names = F)
 
 # Add SV effect on the transcript 
-cases_effect <- read.table(file.path("/mnt/storageBig8/work/micoli/SCNA_Purple/resources/sv_annotation_effects.tsv"), sep="\t", header=T)
+cases_effect <- read.table(file.path("sv_annotation_effects.tsv"), sep="\t", header=T)
 
 ann_vars <- sv_annotation |>
   mutate(Type_simple = case_when(
