@@ -376,7 +376,11 @@ combbreaks           <- subset(combsvid, nselect==1) %>%
                                               across(c("RNA.reads"), ~ ifelse(any(!is.na(.x)), max(.x, na.rm=T), NA)),
                                               across(c("undisruptedCopyNumber1", "undisruptedCopyNumber2"), ~ ifelse(any(!is.na(.x)), min(.x, na.rm=T), NA)),
                                               across(c("affectedCopyNumber1", "affectedCopyNumber2"), ~ ifelse(any(!is.na(.x)), max(.x, na.rm=T), NA)))) %>%
-                            select(-nselect, -priority, -allsame, -sampevent, -nannots)
+                            select(-nselect, -priority, -allsame, -sampevent, -nannots) %>%
+                            mutate(effect     = ifelse(str_detect(effect, "simple") & gene1==gene2 & frame=="frameshift",
+                                                        str_replace(effect, "simple", "frameshift"),
+                                                        ifelse(str_detect(effect, "simple") & gene1==gene2,
+                                                               str_replace(effect, "simple", "inframe"), effect)))
 
 
 # Summarize to the level of gene-of-interest, row per sample-gene. Modify the undisruptedCopyNumber for balanced translocations.
