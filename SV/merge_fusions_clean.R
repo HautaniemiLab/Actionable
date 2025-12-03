@@ -377,7 +377,7 @@ combbreaks           <- subset(combsvid, nselect==1) %>%
                                               across(c("undisruptedCopyNumber1", "undisruptedCopyNumber2"), ~ ifelse(any(!is.na(.x)), min(.x, na.rm=T), NA)),
                                               across(c("affectedCopyNumber1", "affectedCopyNumber2"), ~ ifelse(any(!is.na(.x)), max(.x, na.rm=T), NA)))) %>%
                             select(-nselect, -priority, -allsame, -sampevent, -nannots) %>%
-                            mutate(effect     = ifelse(str_detect(effect, "simple") & gene1==gene2 & frame=="frameshift",
+                            mutate(effect     = ifelse(!is.na(effect) & !is.na(gene1) & !is.na(gene2) & !is.na(frame) & str_detect(effect, "simple") & gene1==gene2 & frame=="frameshift",
                                                         str_replace(effect, "simple", "frameshift"),
                                                         ifelse(str_detect(effect, "simple") & gene1==gene2,
                                                                str_replace(effect, "simple", "inframe"), effect)))
@@ -410,7 +410,7 @@ brk_sample_gene <- combbreaks %>%
                             filter(primary_gene %in% c(gaingenes, lossgenes)) %>%
                             mutate(effect=                ifelse(effect %in% c("loss_transcription", "no_impact"), "fusion_from_unknown",
                                                           ifelse(effect=="promoter_deletion", "5prime_deletion", effect))) %>%
-                            mutate(pathogenic=                   effect %in% c("fusion_from_unknown", "fusion", "5prime_deletion", "promoter_hijacking", "simple_deletion", "simple_duplication") |
+                            mutate(pathogenic=                   effect %in% c("fusion_from_unknown", "fusion", "5prime_deletion", "promoter_hijacking", "frameshift_deletion", "frameshift_duplication", "inframe_deletion", "inframe_duplication") |
                                                                 (effect=="truncated_duplication" & !str_detect(DNA_change, "1_2dup")) |
                                                                 (effect=="truncated_transcripts" & !str_detect(DNA_change, "e\\.2\\:\\:"))) %>%
                             mutate(groupkey =              paste(sample, primary_gene, sep="_")) %>%
