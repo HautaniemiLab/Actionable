@@ -166,3 +166,4 @@ NETWORK        <- NETWORKraw %>%
 # Output
 
 write.table(NETWORK, file="NETWORK.csv", col.names=T, row.names=F, quote=F, sep="\t")
+write.table(data.frame(gene=unique(c(NETWORK$proteinTarget, NETWORK$gene))) %>% arrange(gene), file="Actionable_gene_list.csv", col.names=T, row.names=F, quote=F, sep="\t")
